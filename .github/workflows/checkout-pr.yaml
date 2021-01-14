@@ -3,7 +3,6 @@ name: Checkout and list
 on:
   issue_comment:
     types: [created]
-  workflow_dispatch:
 
 jobs:
   checkout-all:
@@ -19,3 +18,8 @@ jobs:
       with:
         ref: refs/pull/${{ github.event.issue.number }}/head
     - run: tree -a -I .git
+    - run: docker run --rm -v "${PWD}":/workdir mikefarah/yq:3.3.4 yq v files/*
+    - run: echo SUCCESS
+      if: ${{ success() }}
+    - run: echo FAILURE
+      if: ${{ failure() }}
