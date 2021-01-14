@@ -5,13 +5,7 @@ on:
     types: [created]
 
 jobs:
-  checkout-all:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - run: tree -a -I .git
-
-  checkout-pr:
+  checkout-test-old:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -19,6 +13,19 @@ jobs:
         ref: refs/pull/${{ github.event.issue.number }}/head
     - run: tree -a -I .git
     - run: docker run --rm -v "${PWD}":/workdir mikefarah/yq:3.3.4 yq v files/*
+    - run: echo SUCCESS
+      if: ${{ success() }}
+    - run: echo FAILURE
+      if: ${{ failure() }}
+
+  checkout-test-new:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        ref: refs/pull/${{ github.event.issue.number }}/head
+    - run: tree -a -I .git
+    - run: docker run --rm -v "${PWD}":/workdir mikefarah/yq eval-all . files/*
     - run: echo SUCCESS
       if: ${{ success() }}
     - run: echo FAILURE
