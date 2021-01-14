@@ -1,0 +1,21 @@
+name: Checkout and list
+
+on:
+  issue_comment:
+    types: [created]
+  workflow_dispatch:
+
+jobs:
+  checkout-all:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - run: tree -a -I .git
+
+  checkout-pr:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        ref: refs/pull/${{ github.event.issue.number }}/head
+    - run: tree -a -I .git
